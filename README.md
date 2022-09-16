@@ -1,15 +1,29 @@
-# VimShell
+# VimShell with Github Copilot
 
-For information, check [doc/vimshell.txt](doc/vimshell.txt).
+Adds various ergonomic improvements to VimShell for use with Github Copilot. 
+The modifications work in Linux only.
 
-**Note**: Active developement on vimshell.vim has stopped. The only future changes will be bug fixes.
+Works as a drop-in replacement for [Shougo's original vimshell.nvim](https://github.com/Shougo/vimshell.nvim) in [my tutorial for Copilot in the terminal](https://github.com/maxwell-bland/copilot-in-the-terminal).
+For information about VimShell generally, check [doc/vimshell.txt](doc/vimshell.txt). Of course, most of the credit for this goes to Shougo.
 
-You should use [Deol.nvim](https://github.com/Shougo/deol.nvim) instead.
+## Features
 
-## Resources
+- The `sexe` command now directly executes the supplied command line as a bash 
+  script directly, allowing VimShell to support bash `for` and `while` loops, but
+  all `;` need to be written as `\;`, similar to xargs. This was done to avoid 
+  conflicts with the VimShell parser. e.g. 
 
-- [Code @ HootSuite | VimShell](http://code.hootsuite.com/vimshell/)
+  ```
+  sexe for i in 1 2 3\; do echo $i\; done
+  ```
 
-## Screen shots
+  Correctly prints 
+  
+  ```
+  1
+  2
+  3
+  ```
 
-![](https://f.cloud.github.com/assets/980000/982716/eb45a994-0817-11e3-806e-ce6e731b86ef.png)
+
+
