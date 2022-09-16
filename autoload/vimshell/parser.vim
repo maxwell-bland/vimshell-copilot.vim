@@ -73,6 +73,9 @@ function! vimshell#parser#execute_command(commands, context) abort "{{{
     return 0
   endif
 
+  " define a last_command for helping out sexe
+  call vimshell#commands#sexe#set_last_command(a:commands[-1].args)
+
   let commands = a:commands
   let program = commands[0].args[0]
   let args = commands[0].args[1:]

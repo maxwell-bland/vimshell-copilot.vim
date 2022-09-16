@@ -154,10 +154,10 @@ function! vimshell#mappings#define_default_mappings() abort "{{{
 
   " Insert mode key-mappings.
   " Execute command.
-  inoremap <expr> <SID>(bs-ctrl-])
-        \ getline('.')[col('.') - 2] ==# "\<C-]>" ? "\<BS>" : ''
-  imap <buffer> <C-]>               <C-]><SID>(bs-ctrl-])
-  imap <buffer> <CR>                <C-]><Plug>(vimshell_enter)
+  " inoremap <expr> <SID>(bs-ctrl-])
+  "       \ getline('.')[col('.') - 2] ==# "\<C-]>" ? "\<BS>" : ''
+  " imap <buffer> <C-]>               <C-]><SID>(bs-ctrl-])
+  imap <buffer> <CR>                <Plug>(vimshell_enter)
 
   " History completion.
   imap <buffer> <C-l> <Plug>(vimshell_history_unite)
