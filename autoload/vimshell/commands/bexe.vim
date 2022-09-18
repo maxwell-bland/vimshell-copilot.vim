@@ -69,14 +69,11 @@ function! s:command.execute(args, context) abort "{{{
         \ '$GIT_PAGER' : g:vimshell_cat_command,
         \})
 
-  " print the contents of the command into a temporary file
+  " print the contents of the command into a temporary file and run
   let tmpfile = tempname()
   call writefile(['#!/bin/bash', cmdline . ' ' . stdin], tmpfile)
-  " chmod u+x the temp file
   call system('chmod u+x ' . tmpfile)
-  " execute the temp file
   let result = vimproc#system(tmpfile)
-  " delete the temp file
   call delete(tmpfile)
 
   " Restore environment variables.
