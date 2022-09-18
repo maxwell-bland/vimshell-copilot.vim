@@ -1,6 +1,6 @@
 "=============================================================================
-" FILE: sexe.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
+" FILE: bexe.vim
+" AUTHOR: Maxwell Bland <mb28@illinois.edu>
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,29 +24,16 @@
 "=============================================================================
 
 let s:command = {
-      \ 'name' : 'sexe',
+      \ 'name' : 'bexe',
       \ 'kind' : 'special',
-      \ 'description' : 'sexe {command}',
+      \ 'description' : 'bexe {command}',
       \}
 function! s:command.execute(args, context) abort "{{{
-  let [args, options] = vimshell#parser#getopt(a:args, 
-        \{ 'arg=' : ['--encoding']
-        \})
-  if !has_key(options, '--encoding')
-    let options['--encoding'] = 'char'
-  endif
+  " get the real args
+  let cmdline = join(a:args, ' ')
 
-  " Execute shell command.
-  let cmdline = ''
-  for arg in args
-    if vimshell#util#is_windows()
-      let arg = substitute(arg, '"', '\\"', 'g')
-      let arg = substitute(arg, '[<>|^]', '^\0', 'g')
-      let cmdline .= '"' . arg . '" '
-    else
-      let cmdline .= shellescape(arg) . ' '
-    endif
-  endfor
+  let options = {}
+  let options['--encoding'] = 'char'
 
   if vimshell#util#is_windows()
     let cmdline = '"' . cmdline . '"'
@@ -82,7 +69,15 @@ function! s:command.execute(args, context) abort "{{{
         \ '$GIT_PAGER' : g:vimshell_cat_command,
         \})
 
-  let result = system(printf('%s %s', cmdline, stdin))
+  " print the contents of the command into a temporary file
+  let tmpfile = tempname()
+  call writefile(['#!/bin/bash', cmdline . ' ' . stdin], tmpfile)
+  " chmod u+x the temp file
+  call system('chmod u+x ' . tmpfile)
+  " execute the temp file
+  let result = vimproc#system(tmpfile)
+  " delete the temp file
+  call delete(tmpfile)
 
   " Restore environment variables.
   call vimshell#util#restore_variables(environments_save)
@@ -103,6 +98,6 @@ function! s:command.execute(args, context) abort "{{{
   return
 endfunction"}}}
 
-function! vimshell#commands#sexe#define() abort
+function! vimshell#commands#bexe#define() abort
   return s:command
 endfunction

@@ -39,11 +39,27 @@ function! vimshell#parser#eval_script(script, context) abort "{{{
 
   let context = a:context
   let context.is_single_command = (context.is_interactive && max == 1)
-
+  
   let i = 0
   while i < max
     try
-      let ret =  s:execute_statement(statements[i].statement, context)
+      " check if the first character of the first statement is "!", and if so,
+      " then execute the command in bexe with the list of statements, joined 
+      " by "\;"
+      if max > 0 && statements[0].statement[0] ==# '!'
+        " get the statement field from each statement
+        let statements = map(copy(statements), 'v:val["statement"]')
+        " join the statements with ";"
+        let statements = join(statements, ';')
+        " remove the "!" from the beginning of the first statement
+        let statements = statements[1:]
+        " execute the statements in bexe
+        let ret =  s:execute_statement('bexe ' . statements, context)
+        let i = max
+        break
+      else
+        let ret =  s:execute_statement(statements[i].statement, context)
+      endif
     catch /^exe: Process started./
       " Change continuation.
       let b:vimshell.continuation = {
@@ -72,9 +88,6 @@ function! vimshell#parser#execute_command(commands, context) abort "{{{
   if empty(a:commands)
     return 0
   endif
-
-  " define a last_command for helping out sexe
-  call vimshell#commands#sexe#set_last_command(a:commands[-1].args)
 
   let commands = a:commands
   let program = commands[0].args[0]
